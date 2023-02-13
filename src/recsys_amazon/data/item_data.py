@@ -25,7 +25,7 @@ def add_items(file_) -> pd.DataFrame:
     re_html = re.compile(r"<[^>]+>")
     items = pd.DataFrame()
     i = 0
-    for l in ile_:
+    for l in file_:
         r = json.loads(l.strip())
         id = r["asin"]
         if id in selected_items:
