@@ -16,12 +16,12 @@ def get_items_matadata(selected_items: set, item_path: str) -> pd.DataFrame:
     Builds dataset for selected items from metadata
     """    
     with gzip.open(item_path) as f:
-        items = add_items(f)
+        items = add_items(selected_items, f)
 
     return items
 
 
-def add_items(file_) -> pd.DataFrame:
+def add_items(selected_items, file_) -> pd.DataFrame:
     re_html = re.compile(r"<[^>]+>")
     items = pd.DataFrame()
     i = 0
