@@ -24,6 +24,7 @@ def load_data(
 
     if data_path is None:
         data_path = DATA_PATH
+
     logging.info(f"Reading dataset from {data_path}...")
     data = load_ratings(data_path)
 
@@ -62,7 +63,6 @@ def load_data(
 
 
 def load_ratings(data_path: str) -> pd.DataFrame:
-
     data = pd.read_csv(data_path, header=None)
     data.rename(
         columns={0: "item_id", 1: "user_id", 2: "rating", 3: "timestamp"}, inplace=True
