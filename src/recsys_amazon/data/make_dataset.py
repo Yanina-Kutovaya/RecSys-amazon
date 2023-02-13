@@ -24,12 +24,8 @@ def load_data(
 
     if data_path is None:
         data_path = DATA_PATH
-
     logging.info(f"Reading dataset from {data_path}...")
-    data = pd.read_csv(data_path, header=None)
-    data.rename(
-        columns={0: "item_id", 1: "user_id", 2: "rating", 3: "timestamp"}, inplace=True
-    )
+    data = load_ratings(data_path)
 
     logging.info(f"Selecting user-item pairs...")
     user_ids, item_ids = select_users_item_pairs(data)
@@ -63,6 +59,16 @@ def load_data(
     )
 
     return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2, item_features
+
+
+def load_ratings(data_path: str) -> pd.DataFrame:
+
+    data = pd.read_csv(data_path, header=None)
+    data.rename(
+        columns={0: "item_id", 1: "user_id", 2: "rating", 3: "timestamp"}, inplace=True
+    )
+
+    return data
 
 
 def select_users_item_pairs(
