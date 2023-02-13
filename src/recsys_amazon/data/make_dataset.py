@@ -62,7 +62,7 @@ def load_data(
         data_val_lvl_1, data_val_lvl_2, user_reviews
     )
 
-    return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2
+    return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2, item_features
 
 
 def select_users_item_pairs(
