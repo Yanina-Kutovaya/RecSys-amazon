@@ -24,7 +24,7 @@ def load_data(
     """
     Input data source https://nijianmo.github.io/amazon/index.html
 
-    1. From  "Grocery_and_Gourmet_Food.csv" (ratings only) selects users who rated 
+    1. From  "Grocery_and_Gourmet_Food.csv" (ratings only) selects users who rated
     at least 3 items and items rated by at least 2 useres.
 
     2. Splits ratings into train and validation datasets for two-stage recommender system:
@@ -36,7 +36,7 @@ def load_data(
     For the 2nd level mmodel we use 2-years data for train and 1-year - for validation.
     Validation data for the 1st levl model serves as train data for the 2nd level model.
 
-    3. From "meta_Grocery_and_Gourmet_Food.json.gz" (matadata), for items selected for the 2nd 
+    3. From "meta_Grocery_and_Gourmet_Food.json.gz" (matadata), for items selected for the 2nd
     level model, builds items matadata dataset.
 
     4. From "Grocery_and_Gourmet_Food_5.json.gz" (5-core), for items selected for the 2nd level
@@ -48,10 +48,10 @@ def load_data(
     data_train_lvl_1 - train dataset with selected users and items for the 1st level model (ratings only)
     data_val_lvl_1 - validation dataset with selected users and items for the 1st level model and
                     rain dataset for the 2nd level model (ratings with users reviews).
-    data_val_lvl_2 - validation dataset with selected users and items for the 2nd level model 
+    data_val_lvl_2 - validation dataset with selected users and items for the 2nd level model
                     (ratings with users reviews)
     item_features - items matadata dataset built for selected items.
-    
+
     """
 
     if data_path is None:
