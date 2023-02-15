@@ -5,6 +5,10 @@ from typing import Optional, Tuple
 from .train_validation_split import time_split
 from .item_data import get_items_matadata
 from .user_data import get_user_reviews
+from src.recsys_amazon.models.save_artifacts import (
+    save_prefiltered_item_list,
+    save_current_user_list,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +20,11 @@ ITEM_FEATURES_PATH = PATH + "meta_Grocery_and_Gourmet_Food.json.gz"
 USER_FEATURES_PATH = PATH + "Grocery_and_Gourmet_Food_5.json.gz"
 
 
-def load_data(
+def build_dataset(
     data_path: Optional[str] = None,
     item_path: Optional[str] = None,
     user_path: Optional[str] = None,
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Input data source https://nijianmo.github.io/amazon/index.html
 
@@ -75,6 +79,8 @@ def load_data(
         data_val_lvl_1,
         data_val_lvl_2,
     ) = time_split(t0, t1, t2, user_ids, item_ids, data)
+    save_current_user_list(list(selected_users))
+    save_prefiltered_item_list(list(selected_items))
 
     if item_path is None:
         item_path = ITEM_FEATURES_PATH
