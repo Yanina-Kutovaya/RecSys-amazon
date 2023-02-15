@@ -3,7 +3,6 @@ import logging
 import joblib
 import pandas as pd
 from typing import Optional
-import boto3
 
 
 __all__ = ["save_artifacts"]
@@ -251,35 +250,3 @@ def save_train_dataset_lvl_2(
     if train_dataset_lvl_2_path is None:
         train_dataset_lvl_2_path = path + TRAIN_DATASET_LVL_2_PATH
     train_dataset_lvl_2.to_parquet(train_dataset_lvl_2_path, compression="gzip")
-
-
-def save_to_YC_s3(
-    bucket, path="", file_name=None, put_object=None, folders=None, s3_path=""
-):
-    session = boto3.session.Session()
-    if (AWS_ACCESS_KEY_ID is None) | (AWS_SECRET_ACCESS_KEY is None):
-        s3 = session.client(
-            service_name="s3", endpoint_url="https://storage.yandexcloud.net"
-        )
-    else:
-        s3 = session.client(
-            service_name="s3",
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            region_name="eu-west-1",
-            endpoint_url="https://storage.yandexcloud.net",
-        )
-    if file_name:
-        if put_object:
-            s3.put_object(Body=put_object, Bucket=bucket, Key=file_name)
-        else:
-            s3.upload_file(path + file_name, bucket, s3_path + file_name)
-
-    if folders:
-        if type(folders) != list:
-            folders = [folders]
-        for folder in folders:
-            files = os.listdir(path + folder)
-            for f in files:
-                if f != ".gitkeep":
-                    s3.upload_file(path + folder + f, bucket, s3_path + folder + f)
