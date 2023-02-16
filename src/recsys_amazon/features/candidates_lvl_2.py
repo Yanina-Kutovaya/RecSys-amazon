@@ -40,13 +40,11 @@ def get_candidates(
         inference_set.append([user_id, item_id, rating])
 
     predictions = recommender.test(inference_set)
-    preds = pd.DataFrame(columns=["user_id", "item_id", "rating"])
+    preds = []
     for i in range(len(predictions)):
         item = predictions[i]
-        preds.loc[i, "user_id"] = item.uid
-        preds.loc[i, "item_id"] = item.iid
-        preds.loc[i, "rating"] = item.est
-
+        preds.append([item.uid, item.iid, item.est])
+    preds = pd.DataFrame(preds, columns=["user_id", "item_id", "rating"])
     preds.sort_values(by=["user_id", "rating"], ascending=False, inplace=True)
     preds = preds.groupby("user_id").head(n_items)[["user_id", "item_id"]]
 
