@@ -30,8 +30,12 @@ def get_candidates(
     if n_items is None:
         n_items = N_ITEMS
 
-    user_ids = data_train_lvl_1["user_id"].unique().tolist()
-    item_ids = data_train_lvl_1["item_id"].unique().tolist()
+    data_lvl_2 = pd.concat([data_val_lvl_1, data_val_lvl_2], axis=0)
+
+    user_ids = list(set(data_lvl_2["user_id"]) & set(data_train_lvl_1["user_id"]))
+    item_ids = list(set(data_lvl_2["item_id"]) & set(data_train_lvl_1["item_id"]))
+
+    new_users = list(set(data_lvl_2["user_id"]) - set(data_train_lvl_1["user_id"]))
 
     user_item_lists = [user_ids, item_ids, [0]]
     inference_set = []
@@ -49,25 +53,23 @@ def get_candidates(
     preds = preds.groupby("user_id").head(n_items)[["user_id", "item_id"]]
 
     top_popular = get_top_popular(data_train_lvl_1, data_val_lvl_1, n_items)
-    new_user_candidates = get_new_user_candidates(
-        data_train_lvl_1, data_val_lvl_1, data_val_lvl_2, top_popular
-    )
+
+    new_user_candidates = get_new_user_candidates(new_users, top_popular)
     candidates_lvl_2 = pd.concat([preds, new_user_candidates], axis=0)
 
     return candidates_lvl_2
 
 
 def get_top_popular(
-    data_train_lvl_1: pd.DataFrame,
     data_val_lvl_1: pd.DataFrame,
     n_items: int,
 ) -> list:
     """
-    Generates a list of N top popular items based on train and validation data from the 1st level model
+    Generates a list of N top popular items based on the 2nd level model train dataset.
     """
-    data = pd.concat([data_train_lvl_1, data_val_lvl_1], axis=0)
     popularity = (
-        data.groupby("item_id")["user_id"].nunique() / data["user_id"].nunique()
+        data_val_lvl_1.groupby("item_id")["user_id"].nunique()
+        / data_val_lvl_1["user_id"].nunique()
     ).reset_index()
     popularity.rename(columns={"user_id": "share_unique_users"}, inplace=True)
 
@@ -81,20 +83,13 @@ def get_top_popular(
 
 
 def get_new_user_candidates(
-    data_train_lvl_1: pd.DataFrame,
-    data_val_lvl_1: pd.DataFrame,
-    data_val_lvl_2: pd.DataFrame,
+    new_users: list,
     top_popular: list,
 ) -> pd.DataFrame:
     """
-    Recommends to new users items from top popular list.
+    Recommends items from top popular list to new users.
 
     """
-    all_users = pd.concat([data_train_lvl_1, data_val_lvl_1, data_val_lvl_2], axis=0)[
-        "user_id"
-    ].unique()
-    user_ids = data_train_lvl_1["user_id"].unique()
-    new_users = list(set(all_users) - set(user_ids))
     new_user_item_lists = [new_users, top_popular]
     new_user_set = []
     for element in itertools.product(*new_user_item_lists):
