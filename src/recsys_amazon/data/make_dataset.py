@@ -24,7 +24,7 @@ def build_dataset(
     data_path: Optional[str] = None,
     item_path: Optional[str] = None,
     user_path: Optional[str] = None,
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Input data source https://nijianmo.github.io/amazon/index.html
 
@@ -46,8 +46,6 @@ def build_dataset(
     4. From "Grocery_and_Gourmet_Food_5.json.gz" (5-core), for items selected for the 2nd level
     model, builds user reviews datasets.
 
-    5. Merges train and validation datasets for the 2nd level model with users reviews.
-
     Output:
     data_train_lvl_1 - train dataset with selected users and items for the 1st level model (ratings only)
     data_val_lvl_1 - validation dataset with selected users and items for the 1st level model and
@@ -55,6 +53,7 @@ def build_dataset(
     data_val_lvl_2 - validation dataset with selected users and items for the 2nd level model
                     (ratings with users reviews)
     item_features - items matadata dataset built for selected items.
+    user_reviews - user reviews dataset built for selected items.
 
     """
 
@@ -92,12 +91,7 @@ def build_dataset(
     logging.info(f"Reading user reviews from {user_path}...")
     user_reviews = get_user_reviews(selected_users, selected_items, t1, user_path)
 
-    logging.info(f"Adding user reviews to ratings...")
-    data_val_lvl_1, data_val_lvl_2 = add_user_reviews_to_ratings(
-        data_val_lvl_1, data_val_lvl_2, user_reviews
-    )
-
-    return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2, item_features
+    return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2, item_features, user_reviews
 
 
 def load_ratings(data_path: str) -> pd.DataFrame:
@@ -120,21 +114,3 @@ def select_users_item_pairs(
     item_ids = set([i for (_, i) in df[df >= n_users].index])
 
     return user_ids, item_ids
-
-
-def add_user_reviews_to_ratings(
-    data_val_lvl_1: pd.DataFrame,
-    data_val_lvl_2: pd.DataFrame,
-    user_reviews: pd.DataFrame,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Merges train and validation datasets for the 2nd level model with users reviews.
-    """
-    data_val_lvl_1 = data_val_lvl_1.merge(
-        user_reviews, on=["item_id", "user_id", "timestamp"]
-    )
-    data_val_lvl_2 = data_val_lvl_2.merge(
-        user_reviews, on=["item_id", "user_id", "timestamp"]
-    )
-
-    return data_val_lvl_1, data_val_lvl_2
