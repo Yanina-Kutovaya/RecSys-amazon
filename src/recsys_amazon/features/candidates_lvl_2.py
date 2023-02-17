@@ -52,7 +52,7 @@ def get_candidates(
     preds.sort_values(by=["user_id", "rating"], ascending=False, inplace=True)
     preds = preds.groupby("user_id").head(n_items)[["user_id", "item_id"]]
 
-    top_popular = get_top_popular(data_train_lvl_1, data_val_lvl_1, n_items)
+    top_popular = get_top_popular(new_users, n_items)
 
     new_user_candidates = get_new_user_candidates(new_users, top_popular)
     candidates_lvl_2 = pd.concat([preds, new_user_candidates], axis=0)
