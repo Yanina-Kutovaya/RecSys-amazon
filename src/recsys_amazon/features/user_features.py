@@ -42,9 +42,9 @@ def fit_transform_user_features(user_reviews: pd.DataFrame) -> pd.DataFrame:
     def get_n_sentence(sent_list):
         return len(sent_list)
 
-    user_reviews["n_sentence"] = user_reviews["text_"].apply(get_n_sentence)
+    user_reviews["n_sentences"] = user_reviews["text_"].apply(get_n_sentence)
     user_reviews["mean_sent_len"] = (
-        user_reviews["len_text"] / user_reviews["n_sentence"]
+        user_reviews["len_text"] / user_reviews["n_sentences"]
     )
 
     def get_len_1st_sentance(text):
@@ -66,7 +66,7 @@ def fit_transform_user_features(user_reviews: pd.DataFrame) -> pd.DataFrame:
         "item_id",
         "len_text",
         "n_words",
-        "n_sentence",
+        "n_sentences",
         "mean_sent_len",
         "len_1st_sentence",
         "n_words_1st_sentence",
