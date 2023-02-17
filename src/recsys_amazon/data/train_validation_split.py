@@ -33,13 +33,13 @@ def time_split(
         data["user_id"].isin(user_ids)
         & data["item_id"].isin(item_ids)
         & (data["timestamp"] >= t2)
-    ]
+    ].drop_duplicates()
     df_2_y = data[
         data["user_id"].isin(user_ids)
         & data["item_id"].isin(item_ids)
         & (data["timestamp"] >= t1)
         & (data["timestamp"] < t2)
-    ]
+    ].drop_duplicates()
     selected_uses = set(df_2_y["user_id"]) - (
         set(df_1_y["user_id"]) - set(df_2_y["user_id"])
     )
@@ -50,7 +50,7 @@ def time_split(
         & data["item_id"].isin(selected_items)
         & (data["timestamp"] >= t0)
         & (data["timestamp"] < t1)
-    ]
+    ].drop_duplicates()
 
     return (
         selected_uses,
