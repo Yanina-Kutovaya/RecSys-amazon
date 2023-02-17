@@ -29,28 +29,40 @@ def time_split(
 
     """
 
-    df_1_y = data[
-        data["user_id"].isin(user_ids)
-        & data["item_id"].isin(item_ids)
-        & (data["timestamp"] >= t2)
-    ].drop_duplicates()
-    df_2_y = data[
-        data["user_id"].isin(user_ids)
-        & data["item_id"].isin(item_ids)
-        & (data["timestamp"] >= t1)
-        & (data["timestamp"] < t2)
-    ].drop_duplicates()
+    df_1_y = (
+        data[
+            data["user_id"].isin(user_ids)
+            & data["item_id"].isin(item_ids)
+            & (data["timestamp"] >= t2)
+        ]
+        .drop_duplicates()
+        .reset_index()
+    )
+    df_2_y = (
+        data[
+            data["user_id"].isin(user_ids)
+            & data["item_id"].isin(item_ids)
+            & (data["timestamp"] >= t1)
+            & (data["timestamp"] < t2)
+        ]
+        .drop_duplicates()
+        .reset_index()
+    )
     selected_uses = set(df_2_y["user_id"]) - (
         set(df_1_y["user_id"]) - set(df_2_y["user_id"])
     )
     selected_items = set(df_2_y["item_id"]) | set(df_1_y["item_id"])
 
-    df_5_y = data[
-        data["user_id"].isin(selected_uses)
-        & data["item_id"].isin(selected_items)
-        & (data["timestamp"] >= t0)
-        & (data["timestamp"] < t1)
-    ].drop_duplicates()
+    df_5_y = (
+        data[
+            data["user_id"].isin(selected_uses)
+            & data["item_id"].isin(selected_items)
+            & (data["timestamp"] >= t0)
+            & (data["timestamp"] < t1)
+        ]
+        .drop_duplicates()
+        .reset_index()
+    )
 
     return (
         selected_uses,
