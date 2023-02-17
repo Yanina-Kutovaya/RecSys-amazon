@@ -15,6 +15,7 @@ FOLDER_2 = "data/02_intermediate/"
 TRAIN_DATA_LEVEL_1_PATH = FOLDER_2 + "data_train_lvl_1.parquet.gzip"
 VALID_DATA_LEVEL_2_PATH = FOLDER_2 + "data_val_lvl_2.parquet.gzip"
 ITEM_FEATURES_PATH = FOLDER_2 + "item_features.parquet.gzip"
+USER_REVIEWS_PATH = FOLDER_2 + "user_reviews.parquet.gzip"
 
 FOLDER_3 = "data/03_primary/"
 CANDIDATES_PATH = FOLDER_3 + "candidates_lvl_2.parquet.gzip"
@@ -35,17 +36,21 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 
 
-def save_time_split(
+def save_dataset(
     data_train_lvl_1: pd.DataFrame,
     data_val_lvl_1: pd.DataFrame,
     data_val_lvl_2: pd.DataFrame,
+    item_features: pd.DataFrame,
+    user_reviews: pd.DataFrame,
     path: Optional[str] = None,
     train_data_lvl_1_path: Optional[str] = None,
     valid_data_level_1_path: Optional[str] = None,
     valid_data_level_2_path: Optional[str] = None,
+    item_features_path: Optional[str] = None,
+    user_reviews_path: Optional[str] = None,
 ):
 
-    logging.info("Saving time splitted data...")
+    logging.info("Saving dataset...")
 
     if path is None:
         path = PATH
@@ -62,14 +67,24 @@ def save_time_split(
         valid_data_level_2_path = path + VALID_DATA_LEVEL_2_PATH
     data_val_lvl_2.to_parquet(valid_data_level_2_path, compression="gzip")
 
+    if item_features_path is None:
+        item_features_path = path + ITEM_FEATURES_PATH
+    item_features.to_parquet(item_features_path, compression="gzip")
 
-def load_time_split(
+    if user_reviews_path is None:
+        user_reviews_path = path + USER_REVIEWS_PATH
+    user_reviews.to_parquet(user_reviews_path, compression="gzip")
+
+
+def load_dataset(
     path: Optional[str] = None,
     train_data_lvl_1_path: Optional[str] = None,
     valid_data_level_1_path: Optional[str] = None,
     valid_data_level_2_path: Optional[str] = None,
+    item_features_path: Optional[str] = None,
+    user_reviews_path: Optional[str] = None,
 ):
-    logging.info("Loading time splitted data...")
+    logging.info("Loading dataset...")
 
     if path is None:
         path = PATH
@@ -86,39 +101,15 @@ def load_time_split(
         valid_data_level_2_path = path + VALID_DATA_LEVEL_2_PATH
     data_val_lvl_2 = pd.read_parquet(valid_data_level_2_path)
 
-    return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2
-
-
-def save_items_metadata(
-    data: pd.DataFrame,
-    path: Optional[str] = None,
-    item_features_path: Optional[str] = None,
-):
-
-    logging.info("Saving prefiltered data...")
-
-    if path is None:
-        path = PATH
-
-    if item_features_path is None:
-        item_features_path = path + ITEM_FEATURES_PATH
-    data.to_parquet(item_features_path, compression="gzip")
-
-
-def load_items_metadata(
-    path: Optional[str] = None,
-    item_features_path: Optional[str] = None,
-):
-    logging.info("Loading items mwtadata...")
-
-    if path is None:
-        path = PATH
-
     if item_features_path is None:
         item_features_path = path + ITEM_FEATURES_PATH
     item_features = pd.read_parquet(item_features_path)
 
-    return item_features
+    if user_reviews_path is None:
+        user_reviews_path = path + USER_REVIEWS_PATH
+    user_reviews = pd.read_parquet(user_reviews_path)
+
+    return data_train_lvl_1, data_val_lvl_1, data_val_lvl_2, item_features, user_reviews
 
 
 def save_prefiltered_item_list(
