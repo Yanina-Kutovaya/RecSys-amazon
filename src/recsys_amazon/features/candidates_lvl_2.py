@@ -22,8 +22,7 @@ def get_candidates(
     """
     Generates candidates for the 2nd level model.
     Each user from train dataset of the 1st level model is recommended N items.
-    Recommendation for new users - N top popular items from train and validation
-    data of the 1st level model.
+    Recommendation for new users - N top popular items from the 2nd level model train dataset.
 
     """
 
