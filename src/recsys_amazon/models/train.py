@@ -34,9 +34,6 @@ __all__ = ["preprocess_data"]
 
 N_ITEMS = 100
 
-PATH = "data/"
-FOLDERS = ["02_intermediate/", "03_primary/", "04_feature/", "05_model_input/"]
-
 
 def data_preprocessing_pipeline(
     data_train_lvl_1: pd.DataFrame,
