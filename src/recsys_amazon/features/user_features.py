@@ -78,10 +78,10 @@ def fit_transform_user_features(user_reviews: pd.DataFrame) -> pd.DataFrame:
 
 def get_text_embeddings(
     data: pd.DataFrame,
-    col: Optional[str] = "text",
+    col: str = "text",
     max_features: Optional[int] = None,
     n_factors: Optional[int] = None,
-    prefix: Optional[str] = "r_",
+    prefix: str = "r_",
 ) -> pd.DataFrame:
 
     if max_features is None:

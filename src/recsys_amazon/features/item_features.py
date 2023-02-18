@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import pandas as pd
 import category_encoders as ce
+import implicit
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction import text
 from typing import Optional
@@ -28,6 +29,9 @@ FEATURE_FOR_TEXT_EMBEDDINGS = "description"
 MAX_FEATURES = 500
 N_FACTORS = 50
 
+FEATURES_WITH_ITEMS_LISTS = ["also_view", "also_buy"]
+N_FACTORS_ITEMS_LISTS = 50
+
 
 def fit_transform_item_features(
     item_features: pd.DataFrame,
@@ -36,6 +40,7 @@ def fit_transform_item_features(
     text_emb_col: Optional[str] = None,
     n_factors: Optional[int] = None,
     max_features: Optional[int] = None,
+    items_lists_cols: Optional[list] = None,
 ) -> pd.DataFrame:
     """
     Generates new item featurs for train dataset.
@@ -52,6 +57,8 @@ def fit_transform_item_features(
         n_factors = N_FACTORS
     if max_features is None:
         max_features = MAX_FEATURES
+    if items_lists_cols is None:
+        items_lists_cols = FEATURES_WITH_ITEMS_LISTS
 
     item_features.set_index("item_id", inplace=True)
 
@@ -87,9 +94,17 @@ def fit_transform_item_features(
     )
     df3.index = item_features.index
 
-    num_cols = item_features.dtypes[item_features.dtypes == "float"].keys().tolist()
+    logging.info("Encoding features with items lists...")
+
+    df4 = pd.DataFrame(index=item_features.index)
+    for i, feature in enumerate(items_lists_cols):
+        prefix = "s" + str(i) + "_"
+        df = get_items_lists_embeddngs(item_features, feature, prefix)
+        df4 = pd.concat([df4, df], axis=1)
+
+    num_cols = item_features.dtypes[item_features.dtypes == "float"].keys()
     item_features_transformed = pd.concat(
-        [item_features[num_cols], df1, df2, df3], axis=1
+        [item_features[num_cols], df1, df2, df3, df4], axis=1
     )
 
     return item_features_transformed.reset_index()
@@ -105,3 +120,35 @@ def hashing_item_features(
     df.index = item_features.index
 
     return df
+
+
+def get_items_lists_embeddngs(
+    item_features: pd.DataFrame,
+    col: str,
+    prefix: str,
+    n_factors: Optional[int] = None,
+) -> pd.DataFrame:
+
+    if n_factors is None:
+        n_factors = N_FACTORS_ITEMS_LISTS
+
+    vectorizer = TfidfVectorizer(lowercase=False)
+    X = vectorizer.fit_transform(item_features[col])
+
+    als = implicit.als.AlternatingLeastSquares(
+        factors=n_factors,
+        iterations=30,
+        use_gpu=False,
+        calculate_training_loss=False,
+        regularization=0.1,
+    )
+    als.fit(X)
+
+    cols = [prefix + "1_" + str(i) for i in range(n_factors)]
+    df1 = pd.DataFrame(als.user_factors, index=item_features.index, columns=cols)
+
+    item_index = vectorizer.get_feature_names_out().tolist()
+    cols = [prefix + "2_" + str(i) for i in range(n_factors)]
+    df2 = pd.DataFrame(als.item_factors, index=item_index, columns=cols)
+
+    return pd.concat([df1, df2], axis=1)
