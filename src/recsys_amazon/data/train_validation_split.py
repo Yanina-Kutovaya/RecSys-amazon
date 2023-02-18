@@ -36,7 +36,7 @@ def time_split(
             & (data["timestamp"] >= t2)
         ]
         .drop_duplicates()
-        .reset_index()
+        .reset_index(drop=True)
     )
     df_2_y = (
         data[
@@ -46,7 +46,7 @@ def time_split(
             & (data["timestamp"] < t2)
         ]
         .drop_duplicates()
-        .reset_index()
+        .reset_index(drop=True)
     )
     selected_uses = set(df_2_y["user_id"]) - (
         set(df_1_y["user_id"]) - set(df_2_y["user_id"])
@@ -61,7 +61,7 @@ def time_split(
             & (data["timestamp"] < t1)
         ]
         .drop_duplicates()
-        .reset_index()
+        .reset_index(drop=True)
     )
 
     return (
