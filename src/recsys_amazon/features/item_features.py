@@ -73,7 +73,8 @@ def fit_transform_item_features(
         max_features=MAX_FEATURES,
         prefix="d_",
     )
+    df3.index = item_features.index
 
     item_features_transformed = pd.concat([df1, df2, df3], axis=1)
 
-    return item_features_transformed
+    return item_features_transformed.reset_index()
