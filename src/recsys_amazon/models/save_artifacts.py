@@ -57,15 +57,15 @@ def save_dataset(
 
     if train_data_lvl_1_path is None:
         train_data_lvl_1_path = path + TRAIN_DATA_LEVEL_1_PATH
-    data_train_lvl_1.to_parquet(train_data_lvl_1_path, compression="gzip", index=False)
+    data_train_lvl_1.to_parquet(train_data_lvl_1_path, compression="gzip")
 
     if valid_data_level_1_path is None:
         valid_data_level_1_path = path + VALID_DATA_LEVEL_1_PATH
-    data_val_lvl_1.to_parquet(valid_data_level_1_path, compression="gzip", index=False)
+    data_val_lvl_1.to_parquet(valid_data_level_1_path, compression="gzip")
 
     if valid_data_level_2_path is None:
         valid_data_level_2_path = path + VALID_DATA_LEVEL_2_PATH
-    data_val_lvl_2.to_parquet(valid_data_level_2_path, compression="gzip", index=False)
+    data_val_lvl_2.to_parquet(valid_data_level_2_path, compression="gzip")
 
     if item_features_path is None:
         item_features_path = path + ITEM_FEATURES_PATH
