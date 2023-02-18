@@ -87,7 +87,10 @@ def fit_transform_item_features(
     )
     df3.index = item_features.index
 
-    item_features_transformed = pd.concat([df1, df2, df3], axis=1)
+    num_cols = item_features.dtypes[item_features.dtypes == "float"].keys().tolist()
+    item_features_transformed = pd.concat(
+        [item_features[num_cols], df1, df2, df3], axis=1
+    )
 
     return item_features_transformed.reset_index()
 
