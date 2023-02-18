@@ -35,7 +35,7 @@ def get_targets(
         item_features_transformed, on="item_id", how="left"
     )
     targets_lvl_2 = targets_lvl_2.merge(
-        user_features_transformed, on="user_id", how="left"
+        user_features_transformed, on=["user_id", "item_id"], how="left"
     )
     targets_lvl_2 = targets_lvl_2.merge(
         user_item_features, on=["user_id", "item_id"], how="left"
