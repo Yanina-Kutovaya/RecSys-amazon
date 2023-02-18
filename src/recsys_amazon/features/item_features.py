@@ -22,7 +22,7 @@ FEATURES_FOR_COUNT_ENCODER = [
     "brand",
     "rank_group",
 ]
-FEATURE_FOR_HASHING_ENCODER = "brand"
+FEATURES_FOR_HASHING_ENCODER = ["brand", "rank_group"]
 MAX_FEATURES = 500
 N_FACTORS = 50
 
@@ -30,7 +30,7 @@ N_FACTORS = 50
 def fit_transform_item_features(
     item_features: pd.DataFrame,
     count_cols=None,
-    hashing_enc_col=None,
+    hashing_enc_cols=None,
 ) -> pd.DataFrame:
     """
     Generates new item featurs for train dataset.
@@ -39,8 +39,8 @@ def fit_transform_item_features(
 
     if count_cols is None:
         count_cols = FEATURES_FOR_COUNT_ENCODER
-    if hashing_enc_col is None:
-        hashing_enc_col = FEATURE_FOR_HASHING_ENCODER
+    if hashing_enc_cols is None:
+        hashing_enc_cols = FEATURES_FOR_HASHING_ENCODER
 
     item_features.set_index("item_id", inplace=True)
 
@@ -60,9 +60,10 @@ def fit_transform_item_features(
 
     logging.info("Encoding features with HashingEncoder ...")
 
-    hashing_encoder = ce.HashingEncoder(cols=[hashing_enc_col])
-    df2 = hashing_encoder.fit_transform(item_features[[hashing_enc_col]])
-    df2.columns = [hashing_enc_col + "_" + str(i) for i in range(df2.shape[1])]
+    df2 = pd.DataFrame(index=item_features.index)
+    for feature in hashing_enc_cols:
+        df = hashing_item_features(item_features, feature)
+        df2 = pd.concat([df2, df], axis=1)
 
     logging.info("Encoding item descriptions...")
 
@@ -78,3 +79,15 @@ def fit_transform_item_features(
     item_features_transformed = pd.concat([df1, df2, df3], axis=1)
 
     return item_features_transformed.reset_index()
+
+
+def hashing_item_features(
+    item_features: pd.DataFrame,
+    feature: str,
+) -> pd.DataFrame:
+    hashing_encoder = ce.HashingEncoder(cols=[feature])
+    df = hashing_encoder.fit_transform(item_features[[feature]])
+    df.columns = [feature + "_" + str(i) for i in range(df.shape[1])]
+    df.index = item_features.index
+
+    return df
