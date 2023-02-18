@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 __all__ = ["generate_targets"]
 
 
-def get_targets(
+def get_targets_lvl_2(
     data_val_lvl_1: pd.DataFrame,
     candidates_lvl_2: pd.DataFrame,
     item_features_transformed: pd.DataFrame,
