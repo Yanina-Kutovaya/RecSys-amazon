@@ -23,7 +23,7 @@ FEATURES_FOR_COUNT_ENCODER = [
     "brand",
     "rank_group",
 ]
-FEATURES_FOR_HASHING_ENCODER = ["brand", "rank_group"]
+FEATURES_FOR_HASHING_ENCODER = ["brand", "category_3"]
 
 FEATURE_FOR_TEXT_EMBEDDINGS = "description"
 MAX_FEATURES = 500
