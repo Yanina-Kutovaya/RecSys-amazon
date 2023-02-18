@@ -23,14 +23,19 @@ FEATURES_FOR_COUNT_ENCODER = [
     "rank_group",
 ]
 FEATURES_FOR_HASHING_ENCODER = ["brand", "rank_group"]
+
+FEATURE_FOR_TEXT_EMBEDDINGS = "description"
 MAX_FEATURES = 500
 N_FACTORS = 50
 
 
 def fit_transform_item_features(
     item_features: pd.DataFrame,
-    count_cols=None,
-    hashing_enc_cols=None,
+    count_cols: Optional[list] = None,
+    hashing_enc_cols: Optional[list] = None,
+    text_emb_col: Optional[str] = None,
+    n_factors: Optional[int] = None,
+    max_features: Optional[int] = None,
 ) -> pd.DataFrame:
     """
     Generates new item featurs for train dataset.
@@ -41,6 +46,12 @@ def fit_transform_item_features(
         count_cols = FEATURES_FOR_COUNT_ENCODER
     if hashing_enc_cols is None:
         hashing_enc_cols = FEATURES_FOR_HASHING_ENCODER
+    if text_emb_col is None:
+        text_emb_col = FEATURE_FOR_TEXT_EMBEDDINGS
+    if n_factors is None:
+        n_factors = N_FACTORS
+    if max_features is None:
+        max_features = MAX_FEATURES
 
     item_features.set_index("item_id", inplace=True)
 
@@ -69,9 +80,9 @@ def fit_transform_item_features(
 
     df3 = get_text_embeddings(
         item_features,
-        col="description",
-        n_factors=N_FACTORS,
-        max_features=MAX_FEATURES,
+        col=text_emb_col,
+        n_factors=n_factors,
+        max_features=max_features,
         prefix="d_",
     )
     df3.index = item_features.index
