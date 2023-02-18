@@ -103,11 +103,13 @@ def fit_transform_item_features(
         df4 = pd.concat([df4, df], axis=1)
 
     num_cols = item_features.dtypes[item_features.dtypes == "float"].keys()
-    item_features_transformed = pd.concat(
-        [item_features[num_cols], df1, df2, df3, df4], axis=1
+    item_features_transformed = (
+        pd.concat([item_features[num_cols], df1, df2, df3, df4], axis=1)
+        .reset_index()
+        .rename(columns={"index": "item_id"}, inplace=True)
     )
 
-    return item_features_transformed.reset_index()
+    return item_features_transformed
 
 
 def hashing_item_features(
