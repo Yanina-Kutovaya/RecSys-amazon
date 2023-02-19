@@ -83,8 +83,8 @@ def train_store(dataset: pd.DataFrame, filename: str):
     """
 
     X_train, X_valid, y_train, y_valid = train_test_split(dataset)
-    dtrain = lgb.Dataset(X_train, y_train)
-    dvalid = lgb.Dataset(X_valid, y_valid)
+    dtrain = lgb.Dataset(X_train.iloc[:, 2:], y_train)
+    dvalid = lgb.Dataset(X_valid.iloc[:, 2:], y_valid)
 
     logging.info(f"Training the model on {len(X_train)}  items...")
 
